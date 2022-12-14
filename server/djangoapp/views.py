@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
+from django.views.generic import TemplateView
 # from .models import related models
 # from .restapis import related methods
 from django.contrib.auth import login, logout, authenticate
@@ -15,15 +16,15 @@ logger = logging.getLogger(__name__)
 
 
 # Create your views here.
+class BasePageView(TemplateView):
+    template_name = "djangoapp/base.html"
 
 
-# Create an `about` view to render a static about page
-# def about(request):
-# ...
+class AboutPageView(TemplateView):
+    template_name = "djangoapp/about.html"
 
-
-# Create a `contact` view to return a static contact page
-#def contact(request):
+class ContactPageView(TemplateView):
+    template_name = "djangoapp/contact.html"
 
 # Create a `login_request` view to handle sign in request
 # def login_request(request):
@@ -42,6 +43,7 @@ def get_dealerships(request):
     context = {}
     if request.method == "GET":
         return render(request, 'djangoapp/index.html', context)
+    return HttpResponse('', 'html/text', 200)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
