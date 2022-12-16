@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 # from .models import related models
-# from .restapis import related methods
+from .restapis import get_dealers_from_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 class BasePageView(TemplateView):
     template_name = "djangoapp/base.html"
 
+class IndexPageView(TemplateView):
+    template_name = "djangoapp/index.html"   
 
 class AboutPageView(TemplateView):
     template_name = "djangoapp/about.html"
@@ -74,12 +76,13 @@ def signup_request(request):
         else:
             return render(request, 'djangoapp/registration.html', context)
 
-# Update the `get_dealerships` view to render the index page with a list of dealerships
+
 def get_dealerships(request):
-    context = {}
     if request.method == "GET":
-        return render(request, 'djangoapp/index.html', context)
-    return HttpResponse('', 'html/text', 200)
+        url = "https://eu-de.functions.appdomain.cloud/api/v1/web/7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json"
+        dealerships = get_dealers_from_cf(url)
+        dealer_names = [dealer.short_name for dealer in dealerships]
+        return render(request, 'djangoapp/index.html', {'dealer_names':dealer_names})
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
