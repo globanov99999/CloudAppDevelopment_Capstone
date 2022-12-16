@@ -10,9 +10,22 @@
     <body>
 
     <!--Add a nav bar here -->
+    <div class="nav navbar-nav">
+    </div>
 
     <!-- Add reviews as cards -->
-
+    <div class="card-columns">
+    {% for review in reviews %}
+    <div class="card">
+        <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">{{review}}</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
     </body>
 
 </html>
