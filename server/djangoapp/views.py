@@ -88,7 +88,7 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-review.json"
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
-        short_reviews=[f'{r.name}: {r.review}' for r in reviews] 
+        short_reviews=[f'{r.name}: {r.review}\t\t\tVerdict:{r.sentiment}' for r in reviews]
         return render(request, 'djangoapp/dealer_details.html', {'reviews':short_reviews})
 
 

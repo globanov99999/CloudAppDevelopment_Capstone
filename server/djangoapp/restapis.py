@@ -3,14 +3,15 @@ import requests
 from .models import CarDealer, DealerReview
 
 
-
-def get_request(url, **kwargs):
+def get_request(url, auth=None, **kwargs):
     print(kwargs)
-    print(f"GET from {url} ")
-    print("GET from {} ".format(url))
+    print(f"GET from url={url} auth={auth} kwargs={kwargs}")
     try:
-        response = requests.get(url, headers={'Content-Type': 'application/json'},
-                                params=kwargs, timeout=60)
+        response = requests.get(url=url,
+                                auth=auth,
+                                params=kwargs,
+                                headers={'Content-Type': 'application/json'},
+                                timeout=60)
     except Exception: # pylint: disable=broad-except
         print("Network exception occurred")
         return {}
@@ -51,6 +52,7 @@ def get_dealer_reviews_from_cf(url, dealer_id):
             car_make=review['car_make'], car_model=review['car_model'],
             car_year=review['car_year'], sentiment=None,
             id=review['id'], name=review['name'], review=review['review'])
+            review_obj.sentiment = analyze_review_sentiments(review_obj.review)
             results.append(review_obj)
     print(len(results))
     return results
@@ -62,11 +64,13 @@ def get_dealer_reviews_from_cf(url, dealer_id):
 
 
 
-
-# Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
-# def analyze_review_sentiments(text):
-# - Call get_request() with specified arguments
-# - Get the returned sentiment label such as Positive or Negative
-
-
-
+def analyze_review_sentiments(text):
+    return 'SCOOTER'
+    kwargs = {'text':text,
+            'version': 'version',
+            'features': 'features',
+            'return_analyzed_text': 'return_analyzed_text'}
+    result = get_request('WATSON_URL',
+                        requests.auth.HTTPBasicAuth('apikey', 'api_key'),
+                        **kwargs)
+    return result
