@@ -1,7 +1,6 @@
 from django.db import models
-from django.utils.timezone import now
 
-BBB='BBB'
+
 
 class CarMake(models.Model):
     name = models.CharField(null=False, max_length=30, default='Lada')
@@ -50,7 +49,7 @@ class CarDealer:
 
 class DealerReview:
     def __init__(self, dealership, name, purchase, review, purchase_date, car_make, car_model, car_year, sentiment, id):
-        self.dealership
+        self.dealership = dealership
         self.name = name
         self.purchase=purchase
         self.review=review
