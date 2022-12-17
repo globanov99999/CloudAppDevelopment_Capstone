@@ -58,19 +58,34 @@ def get_dealer_reviews_from_cf(url, dealer_id):
     return results
 
 
-# Create a `post_request` to make HTTP POST requests
-# e.g., response = requests.post(url, params=kwargs, json=payload)
-
+def post_request(url, payload, **kwargs):
+    print(kwargs)
+    print(f"POST to url={url} payload={payload} kwargs={kwargs}")
+    try:
+        response = requests.post(url=url,
+                                params=kwargs,
+                                headers={'Content-Type': 'application/json'},
+                                timeout=60)
+    except Exception: # pylint: disable=broad-except
+        print("Network exception occurred")
+        return {}
+    status_code = response.status_code
+    text = response.text
+    print(f"With status {status_code} ")
+    print(f"With text {text} ")
+    if not text:
+        text={}
+    json_data = json.loads(text)
+    return json_data
 
 
 
 def analyze_review_sentiments(text):
-    return 'SCOOTER'
     kwargs = {'text':text,
-            'version': 'version',
-            'features': 'features',
-            'return_analyzed_text': 'return_analyzed_text'}
-    result = get_request('WATSON_URL',
-                        requests.auth.HTTPBasicAuth('apikey', 'api_key'),
+            'version': '2019-07-12',
+            'features': {"sentiment": {},"categories": {},"concepts": {},"entities": {},"keywords": {}},
+            'return_analyzed_text': "True"}
+    result = get_request('https://api.eu-de.natural-language-understanding.watson.cloud.ibm.com/instances/04f4f47e-aa82-48d9-90d7-7a99a8cdfd92',
+                        requests.auth.HTTPBasicAuth('apikey', 'K_JdVSTv13Mp0V9N2BznuTkOHByA2sQ4fcPfHQzBVGj1'),
                         **kwargs)
     return result

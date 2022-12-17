@@ -3,18 +3,16 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
 import logging
 import json
 
-# Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 
-# Create your views here.
 class BasePageView(TemplateView):
     template_name = "djangoapp/base.html"
 
@@ -92,7 +90,18 @@ def get_dealer_details(request, dealer_id):
         return render(request, 'djangoapp/dealer_details.html', {'reviews':short_reviews})
 
 
-# Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+
+def add_review(request, dealer_id):
+    if not request.user.is_authenticated:
+        return redirect('djangoapp:index')
+    if request.method == "POST":
+        review={'time' : datetime.utcnow().isoformat(),
+                'dealership' : 15,
+                'review' : 'This is a great car dealer'}
+        json_payload={'review': review}
+        url = "https://eu-de.functions.appdomain.cloud/api/v1/web/7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/post-review.json"
+        result = post_request(url, json_payload, dealer_d=dealer_id)
+        print(result)
+        return render(request, 'djangoapp/dealer_details.html', {'result':result})
+
 
