@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
+from .restapis import get_dealers_from_cf, get_dealers_by_state, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -78,6 +78,13 @@ def get_dealerships(request):
     if request.method == "GET":
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json"
         dealerships = get_dealers_from_cf(url)
+        dealer_names = [dealer.short_name for dealer in dealerships]
+        return render(request, 'djangoapp/index.html', {'dealer_names':dealer_names})
+
+def get_dealers_by_state(request, state_id):
+    if request.method == "GET":
+        url = "https://eu-de.functions.appdomain.cloud/api/v1/web/7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json"
+        dealerships = get_dealers_by_state(url, state_id)
         dealer_names = [dealer.short_name for dealer in dealerships]
         return render(request, 'djangoapp/index.html', {'dealer_names':dealer_names})
 
