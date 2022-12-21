@@ -7,12 +7,14 @@ from .models import CarModel
 class CarModelInline(admin.TabularInline):
     model = CarModel
 
+
 class CarModelAdmin(admin.ModelAdmin):
-   inlines = [CarModelInline]
+    inlines = [CarModelInline]
+
 
 class CarMakeAdmin(admin.ModelAdmin):
     inlines = [CarModelInline]
 
-admin.site.register(CarMake,CarMakeAdmin)
-admin.site.register(CarModel)
 
+admin.site.register(CarMake, CarMakeAdmin)
+admin.site.register(CarModel)
