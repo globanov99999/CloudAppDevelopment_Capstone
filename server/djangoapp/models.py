@@ -38,7 +38,7 @@ class CarDealer:
         self.zip = dealer_zip
 
     def __str__(self):
-        return "Dealer name: " + self.full_name
+        return "Dealer name: " + self.full_name + " state: " + self.st
 
 
 class DealerReview:

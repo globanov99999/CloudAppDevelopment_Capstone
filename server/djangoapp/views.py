@@ -84,7 +84,7 @@ def get_dealerships(request):
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json'
         dealerships = get_dealers_from_cf(url)
-        dealer_names = [dealer.short_name for dealer in dealerships]
+        dealer_names = [str(dealer) for dealer in dealerships]
         return render(request, DJANGOAPP_INDEX_HTML, {'dealer_names': dealer_names})
 
 
@@ -93,7 +93,7 @@ def get_dealers_by_state(request, state_id):
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json'
         dealerships = get_dealers_by_state_from_cf(url, state_id)
-        dealer_names = [dealer.short_name for dealer in dealerships]
+        dealer_names = [str(dealer) for dealer in dealerships]
         return render(request, DJANGOAPP_INDEX_HTML, {'dealer_names': dealer_names})
 
 
@@ -102,7 +102,7 @@ def get_dealer_details(request, dealer_id):
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-review.json'
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
-        short_reviews = [f'{r.name}: {r.review}\t\t\tVerdict:{r.sentiment}' for r in reviews]
+        short_reviews = [f'{r.name}: {r.review}\t\t\tVerdict: {r.sentiment}' for r in reviews]
         return render(request, 'djangoapp/dealer_details.html', {'reviews': short_reviews})
 
 
@@ -111,11 +111,12 @@ def add_review(request, dealer_id):
         return redirect(DJANGOAPP__INDEX)
     if request.method == 'POST':
         review = {'time': datetime.utcnow().isoformat(),
-                  'dealership': 15,
-                  'review': 'This is a great car dealer'}
+                  'dealership': dealer_id,
+                  'review': 'This is a great car dealer!',
+                  'name': 'Driver'}
         json_payload = {'review': review}
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/post-review.json'
-        result = post_request(url, json_payload, dealer_d=dealer_id)
+        result = post_request(url, json_payload)
         print(result)
-        return render(request, 'djangoapp/dealer_details.html', {'result': result})
+        return render(request, 'djangoapp/dealer_details.html', {'reviews': result})
