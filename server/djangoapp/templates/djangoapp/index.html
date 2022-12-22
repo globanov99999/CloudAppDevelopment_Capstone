@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress HtmlFormInputWithoutLabel, JSUnresolvedLibraryURL -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,45 +13,70 @@
     <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 
 </head>
-    <body>
-    <nav class="navbar navbar-header">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About us</a>  
-                <a class="navbar-brand" href="{% url 'djangoapp:contact' %}">Contact us</a>
-            </div>
-            <div class="nav navbar-nav">
-                Gregory's Cars
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
+<body>
+
+<nav class="navbar navbar-header">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About us</a>
+            <a class="navbar-brand" href="{% url 'djangoapp:contact' %}">Contact us</a>
+        </div>
+        <div class="nav navbar-nav">
+            Gregory's Dealerships Portal
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
                 <li>
                     <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
                 </li>
-                {% else %}
+            {% else %}
                 <li>
                     <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Password" name="psw" >
+                            <input type="text" class="form-control" placeholder="Username" name="username">
+                            <input type="password" class="form-control" placeholder="Password" name="psw">
                             <button class="btn btn-primary" type="submit">Login</button>
                             <a class="btn btn-link" href="{% url 'djangoapp:signup' %}">Sign Up</a>
                         </div>
                     </form>
                 </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-
-    {% for d_n in dealer_names %}
-    <div class="container-fluid">
-        {{d_n}}
+            {% endif %}
+        </ul>
     </div>
+</nav>
+
+<table class="table" id="table_dealerships" data-filter-control="true" aria-describedby="table_dealerships">
+    <thead>
+    <tr>
+        <th data-field="id">ID</th>
+        <th data-field="name">Dealer Name</th>
+        <th data-field="city">City</th>
+        <th data-field="address">Address</th>
+        <th data-field="zip">Zip</th>
+        <th data-field="state" data-filter-control="select">State</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for dealer in dealerships %}
+        <tr>
+            <td>{{ dealer.dealer_id }}</td>
+            <td><a href="{% url 'djangoapp:dealer_details' dealer.dealer_id %}">{{ dealer.full_name }}</a></td>
+            <td>{{ dealer.city }}</td>
+            <td>{{ dealer.address }}</td>
+            <td>{{ dealer.zip }}</td>
+            <td>{{ dealer.st }}</td>
+        </tr>
     {% endfor %}
+    </tbody>
+</table>
 
-    </body>
-
+</body>
+<!--suppress JSUnresolvedFunction -->
+<script>
+    $(function () {
+        $('#table_dealerships').bootstrapTable()
+    })
+</script>
 </html>

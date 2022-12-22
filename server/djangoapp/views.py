@@ -6,14 +6,15 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 
+from .models import CarModel
 from .restapis import get_dealers_from_cf, get_dealers_by_state_from_cf, get_dealer_reviews_from_cf, post_request
 
 logger = logging.getLogger(__name__)
 
-
 DJANGOAPP_INDEX_HTML = 'djangoapp/index.html'
 DJANGOAPP__INDEX = 'djangoapp:index'
 
+LOCAL_DEALERS = {}
 
 class BasePageView(TemplateView):
     template_name = 'djangoapp/base.html'
@@ -84,8 +85,10 @@ def get_dealerships(request):
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json'
         dealerships = get_dealers_from_cf(url)
-        dealer_names = [str(dealer) for dealer in dealerships]
-        return render(request, DJANGOAPP_INDEX_HTML, {'dealer_names': dealer_names})
+        for dealer in dealerships:
+            LOCAL_DEALERS[dealer.dealer_id]=dealer.full_name
+        context = {'dealerships': dealerships}
+        return render(request, DJANGOAPP_INDEX_HTML, context)
 
 
 def get_dealers_by_state(request, state_id):
@@ -102,8 +105,10 @@ def get_dealer_details(request, dealer_id):
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-review.json'
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
-        short_reviews = [f'{r.name}: {r.review}\t\t\tVerdict: {r.sentiment}' for r in reviews]
-        return render(request, 'djangoapp/dealer_details.html', {'reviews': short_reviews})
+        context = {'reviews': reviews,
+                   'dealership': LOCAL_DEALERS.get(dealer_id, f'Dealership #{dealer_id}'),
+                   'dealer_id': dealer_id}
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 
 def add_review(request, dealer_id):
@@ -120,3 +125,8 @@ def add_review(request, dealer_id):
         result = post_request(url, json_payload)
         print(result)
         return render(request, 'djangoapp/dealer_details.html', {'reviews': result})
+    elif request.method == 'GET':
+        return render(request, 'djangoapp/add_review.html',
+                      {'dealer_id':dealer_id,
+                       'dealership': LOCAL_DEALERS.get(dealer_id, f'Dealership #{dealer_id}'),
+                       'cars': CarModel.objects.all()})

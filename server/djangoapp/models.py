@@ -1,5 +1,9 @@
 from django.db import models
 
+import datetime
+YEAR_CHOICES = []
+for r in range(1900, (datetime.datetime.now().year+1)):
+    YEAR_CHOICES.append((r, r))
 
 class CarMake(models.Model):
     name = models.CharField(null=False, max_length=30, default='Lada')
@@ -18,7 +22,7 @@ class CarModel(models.Model):
     name = models.CharField(null=False, max_length=30, default='Niva')
     type_choices = (('Sedan', 'Sedan'), ('SUV', 'SUV'), ('Wagon', 'Wagon'), ('Roadster', 'Roadster'))
     car_type = models.CharField(max_length=10, choices=type_choices, default='Sedan')
-    year = models.DateField()
+    year = models.IntegerField('year', choices=YEAR_CHOICES, default=datetime.datetime.now().year)
     color = models.CharField(null=False, max_length=30, default='Green')
 
     def __str__(self):

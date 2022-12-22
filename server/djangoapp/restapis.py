@@ -11,6 +11,8 @@ NLU_URL = 'https://api.eu-de.natural-language-understanding.watson.cloud.ibm.com
           'instances/04f4f47e-aa82-48d9-90d7-7a99a8cdfd92'
 
 
+
+
 def get_request(url, auth=None, **kwargs):
     print(kwargs)
     print(f'GET from url={url} auth={auth} kwargs={kwargs}')
