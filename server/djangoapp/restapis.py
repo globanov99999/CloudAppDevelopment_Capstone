@@ -7,10 +7,10 @@ from ibm_watson.natural_language_understanding_v1 import Features, KeywordsOptio
 
 from .models import CarDealer, DealerReview
 
+requests.packages.urllib3.disable_warnings()
+
 NLU_URL = 'https://api.eu-de.natural-language-understanding.watson.cloud.ibm.com/' \
           'instances/04f4f47e-aa82-48d9-90d7-7a99a8cdfd92'
-
-
 
 
 def get_request(url, auth=None, **kwargs):
@@ -22,8 +22,10 @@ def get_request(url, auth=None, **kwargs):
                                 auth=auth,
                                 params=kwargs,
                                 headers={'Content-Type': 'application/json'},
-                                timeout=60)
-    except Exception:  # pylint: disable=broad-except
+                                timeout=60,
+                                verify=False)
+    except Exception as exc:  # pylint: disable=broad-except
+        print(exc)
         print('Network exception occurred')
         return {}
     status_code = response.status_code
@@ -92,8 +94,10 @@ def post_request(url, payload, **kwargs):
                                  json=payload,
                                  params=kwargs,
                                  headers={'Content-Type': 'application/json'},
-                                 timeout=60)
-    except Exception:  # pylint: disable=broad-except
+                                 timeout=60,
+                                 verify=False)
+    except Exception as exc:  # pylint: disable=broad-except
+        print(exc)
         print('Network exception occurred')
         return {}
     status_code = response.status_code
@@ -107,19 +111,28 @@ def post_request(url, payload, **kwargs):
 
 
 def analyze_review_sentiments(text):
-    authenticator = IAMAuthenticator('K_JdVSTv13Mp0V9N2BznuTkOHByA2sQ4fcPfHQzBVGj1')
+    authenticator = IAMAuthenticator('K_JdVSTv13Mp0V9N2BznuTkOHByA2sQ4fcPfHQzBVGj1',
+                                     disable_ssl_verification=True)
     natural_language_understanding = NaturalLanguageUnderstandingV1(
         version='2022-04-07',
         authenticator=authenticator
     )
-
+    natural_language_understanding.set_disable_ssl_verification(True)
     natural_language_understanding.set_service_url(NLU_URL)
 
-    response = natural_language_understanding.analyze(
-        text=text,
-        features=Features(
-            keywords=KeywordsOptions(emotion=True, sentiment=True)
-        )).get_result()
-    res = ','.join(r['sentiment']['label'] for r in response.get('keywords', []))
-    print(res)
+    res = None
+    try:
+        response = natural_language_understanding.analyze(
+            text=text,
+            features=Features(
+                keywords=KeywordsOptions(emotion=True, sentiment=True)
+            )
+        ).get_result()
+        # noinspection PyUnresolvedReferences
+        res = ','.join(r['sentiment']['label'] for r in response.get('keywords', []))
+    except Exception as exc:
+        print(exc)
+    if not res:
+        res = 'neutral'
+
     return res

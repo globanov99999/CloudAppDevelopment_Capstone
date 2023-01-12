@@ -47,10 +47,11 @@
         </ul>
     </div>
 </nav>
-<p>
+
 <h5>Add a review for <b>{{ dealership }}</b></h5>
-</p>
+
 <form action="{% url 'djangoapp:add_review' dealer_id %}" method="post">
+    {% csrf_token %}
     Please share your experience
     <textarea class="form-control" id="content" name="content" rows="2" required></textarea>
     <div class="form-check">
@@ -70,10 +71,12 @@
         </select>
     </div>
     <div>
-        <b>Please specify the year of the car</b>
-        <input data-provide="datepicker">
+        <b>Please specify purchase date</b>
     </div>
-    <input type="submit" value="OK">
+    <div >
+        <input class="form-date" data-provide="datepicker" id="purchase_date" name="purchase_date">
+    </div>
+    <button class="btn btn-primary" type="submit">Add review</button>
 </form>
 </body>
 </html>

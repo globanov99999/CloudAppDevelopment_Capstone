@@ -16,6 +16,7 @@ DJANGOAPP__INDEX = 'djangoapp:index'
 
 LOCAL_DEALERS = {}
 
+
 class BasePageView(TemplateView):
     template_name = 'djangoapp/base.html'
 
@@ -86,7 +87,7 @@ def get_dealerships(request):
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/get-dealership.json'
         dealerships = get_dealers_from_cf(url)
         for dealer in dealerships:
-            LOCAL_DEALERS[dealer.dealer_id]=dealer.full_name
+            LOCAL_DEALERS[dealer.dealer_id] = dealer.full_name
         context = {'dealerships': dealerships}
         return render(request, DJANGOAPP_INDEX_HTML, context)
 
@@ -115,18 +116,26 @@ def add_review(request, dealer_id):
     if not request.user.is_authenticated:
         return redirect(DJANGOAPP__INDEX)
     if request.method == 'POST':
+        content = request.POST['content']
+        car_id = request.POST['car']
+        car = CarModel.objects.get(pk=car_id)
+        purchase_date = request.POST['purchase_date']
         review = {'time': datetime.utcnow().isoformat(),
                   'dealership': dealer_id,
-                  'review': 'This is a great car dealer!',
-                  'name': 'Driver'}
+                  'review': content,
+                  'car_make': car.make.name,
+                  'car_model': car.name,
+                  'car_year': car.year,
+                  'purchise_date': purchase_date}
         json_payload = {'review': review}
+        print(json_payload)
         url = 'https://eu-de.functions.appdomain.cloud/api/v1/web/' \
               '7d385671-e1f0-4106-b25f-758f2c26052d/dealership-package/post-review.json'
         result = post_request(url, json_payload)
         print(result)
-        return render(request, 'djangoapp/dealer_details.html', {'reviews': result})
+        return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
     elif request.method == 'GET':
         return render(request, 'djangoapp/add_review.html',
-                      {'dealer_id':dealer_id,
+                      {'dealer_id': dealer_id,
                        'dealership': LOCAL_DEALERS.get(dealer_id, f'Dealership #{dealer_id}'),
                        'cars': CarModel.objects.all()})

@@ -5,6 +5,7 @@ YEAR_CHOICES = []
 for r in range(1900, (datetime.datetime.now().year+1)):
     YEAR_CHOICES.append((r, r))
 
+
 class CarMake(models.Model):
     name = models.CharField(null=False, max_length=30, default='Lada')
     description = models.CharField(null=False, max_length=120, default='Decription')
