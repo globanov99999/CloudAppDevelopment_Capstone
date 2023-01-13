@@ -21,6 +21,6 @@ EXPOSE 8000
 
 COPY entrypoint.sh $APP
 RUN chmod +x $APP/entrypoint.sh
-ENTRYPOINT [$APP+"/entrypoint.sh"]
+ENTRYPOINT ["/capstone/entrypoint.sh"]
 
 CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "djangobackend.wsgi"]
