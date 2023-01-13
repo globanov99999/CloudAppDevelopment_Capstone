@@ -11,3 +11,7 @@ echo "Preparing migrations and  updating the database. "
 python manage.py makemigrations main --noinput
 python manage.py migrate --noinput
 exec "$@"
+
+# Start server
+echo "Starting server"
+python manage.py runserver 127.0.0.1:8000
