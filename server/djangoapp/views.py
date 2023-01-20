@@ -4,8 +4,8 @@ from datetime import datetime
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 
 from .models import CarModel
 from .restapis import get_dealers_from_cf, get_dealers_by_state_from_cf, get_dealer_reviews_from_cf, post_request
@@ -33,6 +33,7 @@ class AboutPageView(TemplateView):
 class ContactPageView(TemplateView):
     template_name = 'djangoapp/contact.html'
 
+
 @csrf_exempt
 def login_request(request):
     context = {}
@@ -53,6 +54,7 @@ def logout_request(request):
     print('Log out the user `%s`', request.user.username)
     logout(request)
     return redirect(DJANGOAPP__INDEX)
+
 
 @csrf_exempt
 def signup_request(request):
@@ -111,6 +113,7 @@ def get_dealer_details(request, dealer_id):
                    'dealership': LOCAL_DEALERS.get(dealer_id, f'Dealership #{dealer_id}'),
                    'dealer_id': dealer_id}
         return render(request, 'djangoapp/dealer_details.html', context)
+
 
 @csrf_exempt
 def add_review(request, dealer_id):
