@@ -23,4 +23,6 @@ COPY entrypoint.sh $APP
 RUN chmod +x $APP/entrypoint.sh
 ENTRYPOINT ["/capstone/entrypoint.sh"]
 
+WORKDIR $APP/server
+
 CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "djangobackend.wsgi"]

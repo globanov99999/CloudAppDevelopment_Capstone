@@ -8,10 +8,6 @@ if [ "$DATABASE" = "postgres" ]; then
 fi
 
 echo "Preparing migrations and  updating the database. "
-python manage.py makemigrations main --noinput
-python manage.py migrate --noinput
+python manage.py makemigrations djangoapp
+python manage.py migrate
 exec "$@"
-
-# Start server
-echo "Starting server"
-python manage.py runserver localhost:8000
